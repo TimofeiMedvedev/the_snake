@@ -17,6 +17,9 @@ RIGHT = (1, 0)
 # Цвет фона - черный:
 BOARD_BACKGROUND_COLOR = (0, 0, 0)
 
+# Цвет фона по умолчанию:
+DEFAULT_OBG_COLOR = (100, 100, 100)
+
 # Цвет границы ячейки
 BORDER_COLOR = (93, 216, 228)
 
@@ -41,16 +44,52 @@ clock = pygame.time.Clock()
 
 # Тут опишите все классы игры.
 ...
+class GameObject:
+    
+    def __init__(self) -> None:
+        self.position = (0, 0)
+        self.body_color = DEFAULT_OBG_COLOR
+
+    def draw(self):
+        pass
+
+
+class Apple(GameObject):
+
+    def __init__(self, body_color=APPLE_COLOR) -> None:
+        super().__init__()
+        self.position = self.randomize_position()
+        self.body_color = APPLE_COLOR
+        
+    
+    def randomize_position(self) -> tuple[int, int]:
+        return (
+            randint(0, GRID_WIDTH) * GRID_SIZE,
+            randint(0, GRID_HEIGHT) * GRID_SIZE,
+        )
+    
+    def draw(self):
+        rect = pygame.Rect(self.position, (GRID_SIZE, GRID_SIZE))
+        pygame.draw.rect(screen, self.body_color, rect)
+        pygame.draw.rect(screen, BORDER_COLOR, rect, 1)
+
+
+class Snake(GameObject):
+    pass
+
 
 
 def main():
     # Инициализация PyGame:
     pygame.init()
     # Тут нужно создать экземпляры классов.
-    ...
+    apple = Apple()
+    apple.draw()
 
-    # while True:
-    #     clock.tick(SPEED)
+    while True:
+        clock.tick(SPEED)
+
+        pygame.display.update()
 
         # Тут опишите основную логику игры.
         # ...
