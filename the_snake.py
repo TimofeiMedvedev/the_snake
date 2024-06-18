@@ -47,7 +47,7 @@ clock = pygame.time.Clock()
 class GameObject:
     
     def __init__(self) -> None:
-        self.position = (0, 0)
+        self.position = (SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2)
         self.body_color = DEFAULT_OBG_COLOR
 
     def draw(self):
@@ -78,17 +78,32 @@ class Snake(GameObject):
     pass
 
 
+def handle_keys(game_object):
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            pygame.quit()
+            raise SystemExit
+        elif event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_UP and game_object.direction != DOWN:
+                game_object.next_direction = UP
+            elif event.key == pygame.K_DOWN and game_object.direction != UP:
+                game_object.next_direction = DOWN
+            elif event.key == pygame.K_LEFT and game_object.direction != RIGHT:
+                game_object.next_direction = LEFT
+            elif event.key == pygame.K_RIGHT and game_object.direction != LEFT:
+                game_object.next_direction = RIGHT
+
 
 def main():
     # Инициализация PyGame:
     pygame.init()
     # Тут нужно создать экземпляры классов.
     apple = Apple()
-    apple.draw()
 
     while True:
         clock.tick(SPEED)
-
+        apple.draw()
+        handle_keys(apple)
         pygame.display.update()
 
         # Тут опишите основную логику игры.
