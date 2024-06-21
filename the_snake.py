@@ -123,12 +123,10 @@ class Snake(GameObject):
         x_new_head_snake = (x_head + x * GRID_SIZE) % SCREEN_WIDTH
         y_new_head_snake = (y_head + y * GRID_SIZE) % SCREEN_HEIGHT
         new_head_snake = (x_new_head_snake, y_new_head_snake)
-        if new_head_snake in self.positions[2:]:
-            self.reset()
-        else:
-            self.positions.insert(0, new_head_snake)
-            if len(self.positions) > self.length:
-                self.last = self.positions.pop()
+
+        self.positions.insert(0, new_head_snake)
+        if len(self.positions) > self.length:
+            self.last = self.positions.pop()
 
     def get_head_position(self):
         """Возвращение сегмента головы змейки"""
@@ -139,7 +137,7 @@ class Snake(GameObject):
         """Метод сброса настроек змейки при столкновении"""
         self.length = 1
         self.positions = [((SCREEN_WIDTH // 2), (SCREEN_HEIGHT // 2))]
-        self.direction = randint(UP, DOWN, LEFT, RIGHT)
+        self.direction = randint(UP, LEFT, RIGHT)
         self.next_direction = None
         self.last = None
         screen.fill(BOARD_BACKGROUND_COLOR)
@@ -151,6 +149,7 @@ def handle_keys(game_object):
         if event.type == pygame.QUIT:
             pygame.quit()
             raise SystemExit
+
         elif event.type == pygame.KEYDOWN:
             if event.key == pygame.K_UP and game_object.direction != DOWN:
                 game_object.next_direction = UP
