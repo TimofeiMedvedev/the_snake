@@ -117,13 +117,12 @@ class Snake(GameObject):
         """Метод вычисления координат головы и тела змейки при
         движении, а также проверка на столкновение с телом змейки
         """
-        head_snake = self.get_head_position()
+        x_head, y_head = self.get_head_position()
         x, y = self.direction
         self.update_direction()
-        new_head_snake = (
-            (head_snake[0] + x * GRID_SIZE) % SCREEN_WIDTH,
-            (head_snake[1] + y * GRID_SIZE) % SCREEN_HEIGHT
-        )
+        x_new_head_snake = (x_head + x * GRID_SIZE) % SCREEN_WIDTH
+        y_new_head_snake = (y_head + y * GRID_SIZE) % SCREEN_HEIGHT
+        new_head_snake = (x_new_head_snake, y_new_head_snake)
         if new_head_snake in self.positions[2:]:
             self.reset()
         else:
@@ -133,7 +132,8 @@ class Snake(GameObject):
 
     def get_head_position(self):
         """Возвращение сегмента головы змейки"""
-        return self.positions[0]
+        (x_0, y_0) = self.positions[0]
+        return (x_0, y_0)
 
     def reset(self):
         """Метод сброса настроек змейки при столкновении"""
@@ -177,6 +177,8 @@ def main():
         snake.move()
         snake.draw()
         apple.draw()
+        if snake.get_head_position() in snake.positions[2:]:
+            snake.reset()
         if snake.get_head_position() == apple.position:
             snake.length += 1
             apple.randomize_position()
