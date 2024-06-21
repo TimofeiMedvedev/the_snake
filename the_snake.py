@@ -48,13 +48,37 @@ clock = pygame.time.Clock()
 class GameObject:
     """Создадим базовый класс c общими атрибутами."""
 
-    def __init__(self, body_color=DEFAULT_OBG_COLOR) -> None:
-        self.position = (SCREEN_WIDTH // 2), (SCREEN_HEIGHT // 2)
-        self.body_color = DEFAULT_OBG_COLOR
+    def __init__(self, body_color=None, position=None) -> None:
+        self.position = [((SCREEN_WIDTH // 2), (SCREEN_HEIGHT // 2))]
+        self.body_color = body_color
+        self.positions = [self.position]
+        self.randomize_position()
 
     def draw(self):
-        """создадим метод отрисовки для изменений в дочернем классе."""
-        pass
+        """Метод отрисовки змейки и затирание последнего сегмента"""
+        for position in self.positions[:-1]:
+            rect = (pygame.Rect(position, (GRID_SIZE, GRID_SIZE)))
+            pygame.draw.rect(screen, self.body_color, rect)
+            pygame.draw.rect(screen, BORDER_COLOR, rect, 1)
+
+        head_rect = pygame.Rect(self.positions[0], (GRID_SIZE, GRID_SIZE))
+        pygame.draw.rect(screen, self.body_color, head_rect)
+        pygame.draw.rect(screen, BORDER_COLOR, head_rect, 1)
+
+        # Затирание последнего сегмента
+        if self.last:
+            last_rect = pygame.Rect(self.last, (GRID_SIZE, GRID_SIZE))
+            pygame.draw.rect(screen, BOARD_BACKGROUND_COLOR, last_rect)
+    
+    def randomize_position(self):
+        """Метод определения случайных координат в яблоке."""
+        self.position = (
+            randint(0, GRID_WIDTH - 1) * GRID_SIZE,
+            randint(0, GRID_HEIGHT - 1) * GRID_SIZE
+        )
+
+        if self.position in self.position:
+            return False
 
 
 class Apple(GameObject):
@@ -63,14 +87,6 @@ class Apple(GameObject):
     def __init__(self) -> None:
         super().__init__()
         self.body_color = APPLE_COLOR
-        self.randomize_position()
-
-    def randomize_position(self):
-        """Метод определения случайных координат в яблоке."""
-        self.position = (
-            randint(0, GRID_WIDTH - 1) * GRID_SIZE,
-            randint(0, GRID_HEIGHT - 1) * GRID_SIZE
-        )
 
     def draw(self):
         """Метод рисования яблока."""
@@ -82,7 +98,7 @@ class Apple(GameObject):
 class Snake(GameObject):
     """Создадим класс объекта - Змейка."""
 
-    def __init__(self, body_color=SNAKE_GREEN) -> None:
+    def __init__(self) -> None:
         super().__init__()
         self.length = 1
         self.positions = [self.position]
@@ -114,22 +130,6 @@ class Snake(GameObject):
             self.positions.insert(0, new_head_snake)
             if len(self.positions) > self.length:
                 self.last = self.positions.pop()
-
-    def draw(self):
-        """Метод отрисовки змейки и затирание последнего сегмента"""
-        for position in self.positions[:-1]:
-            rect = (pygame.Rect(position, (GRID_SIZE, GRID_SIZE)))
-            pygame.draw.rect(screen, self.body_color, rect)
-            pygame.draw.rect(screen, BORDER_COLOR, rect, 1)
-
-        head_rect = pygame.Rect(self.positions[0], (GRID_SIZE, GRID_SIZE))
-        pygame.draw.rect(screen, self.body_color, head_rect)
-        pygame.draw.rect(screen, BORDER_COLOR, head_rect, 1)
-
-        # Затирание последнего сегмента
-        if self.last:
-            last_rect = pygame.Rect(self.last, (GRID_SIZE, GRID_SIZE))
-            pygame.draw.rect(screen, BOARD_BACKGROUND_COLOR, last_rect)
 
     def get_head_position(self):
         """Возвращение сегмента головы змейки"""
