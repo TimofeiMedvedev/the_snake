@@ -58,6 +58,7 @@ class GameObject:
         raise NotImplementedError('добавить этот метод в дочерние классы')
 
 
+
 class Apple(GameObject):
     """Создадим класс объекта - Яблоко."""
 
