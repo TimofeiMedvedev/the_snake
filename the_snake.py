@@ -48,15 +48,20 @@ clock = pg.time.Clock()
 class GameObject:
     """Создадим базовый класс c общими атрибутами."""
 
-    def __init__(self, body_color=None, position_list=None) -> None:
+    def __init__(self, body_color=None, position_list=None, next_direction=None) -> None:
         self.position = ((SCREEN_WIDTH // 2), (SCREEN_HEIGHT // 2))
         self.body_color = body_color
         self.position_list = position_list
+        self.next_direction = next_direction
 
     def draw(self):
         """создадим метод отрисовки для изменений в дочернем классе."""
         raise NotImplementedError('добавить этот метод в дочерние классы')
-
+    
+    def draw_rect(self, position_draw, body_color):
+        rect = pg.Rect(position_draw, (GRID_SIZE, GRID_SIZE))
+        pg.draw.rect(screen, body_color, rect)
+        pg.draw.rect(screen, BORDER_COLOR, rect, 1)
 
 
 class Apple(GameObject):
@@ -79,9 +84,8 @@ class Apple(GameObject):
 
     def draw(self):
         """Метод рисования яблока."""
-        rect = pg.Rect(self.position, (GRID_SIZE, GRID_SIZE))
-        pg.draw.rect(screen, self.body_color, rect)
-        pg.draw.rect(screen, BORDER_COLOR, rect, 1)
+        self.draw_rect(self.position, self.body_color)
+
 
 
 class Snake(GameObject):
@@ -92,15 +96,14 @@ class Snake(GameObject):
         self.length = 1
         self.positions = [self.position]
         self.direction = RIGHT
-        self.next_direction = None
         self.body_color = SNAKE_GREEN
         self.last = 0
 
-    def update_direction(self):
+    def update_direction(self, next_direction):
         """Метод изменения направления змейки после нажатия на кнопку."""
-        if self.next_direction:
-            self.direction = self.next_direction
-            self.next_direction = None
+        if next_direction:
+            self.direction = next_direction
+            next_direction = None
 
     def move(self):
         """Метод вычисления координат головы и тела змейки при
@@ -108,7 +111,7 @@ class Snake(GameObject):
         """
         x_head, y_head = self.get_head_position()
         x, y = self.direction
-        self.update_direction()
+        self.update_direction(self.next_direction)
         x_new_head_snake = (x_head + x * GRID_SIZE) % SCREEN_WIDTH
         y_new_head_snake = (y_head + y * GRID_SIZE) % SCREEN_HEIGHT
         new_head_snake = (x_new_head_snake, y_new_head_snake)
@@ -119,14 +122,11 @@ class Snake(GameObject):
 
     def draw(self):
         """Метод отрисовки змейки и затирание последнего сегмента"""
-        for position in self.positions[:-1]:
-            rect = (pg.Rect(position, (GRID_SIZE, GRID_SIZE)))
-            pg.draw.rect(screen, self.body_color, rect)
-            pg.draw.rect(screen, BORDER_COLOR, rect, 1)
-
-        head_rect = pg.Rect(self.positions[0], (GRID_SIZE, GRID_SIZE))
-        pg.draw.rect(screen, self.body_color, head_rect)
-        pg.draw.rect(screen, BORDER_COLOR, head_rect, 1)
+        for position_snake in self.positions[:-1]:
+            self.draw_rect(position_snake, self.body_color)
+           
+        self.draw_rect(self.positions[0], self.body_color)
+       
 
         # Затирание последнего сегмента
         if self.last:
