@@ -65,12 +65,12 @@ class GameObject:
     def draw(self):
         """создадим метод отрисовки для изменений в дочернем классе."""
         raise NotImplementedError('добавить этот метод в дочерние классы')
-    
-    def draw_rect(self, position_draw, body_color):
+
+    def draw_rect(self, position_draw, body_color, body_color2=BORDER_COLOR):
         """А это общий модуль для отрисовки фигур в дочерних классах"""
         rect = pg.Rect(position_draw, (GRID_SIZE, GRID_SIZE))
         pg.draw.rect(screen, body_color, rect)
-        pg.draw.rect(screen, BORDER_COLOR, rect, 1)
+        pg.draw.rect(screen, body_color2, rect, 1)
 
 
 class Apple(GameObject):
@@ -94,7 +94,6 @@ class Apple(GameObject):
     def draw(self):
         """Метод рисования яблока."""
         self.draw_rect(self.position, self.body_color)
-
 
 
 class Snake(GameObject):
@@ -126,7 +125,7 @@ class Snake(GameObject):
         new_head_snake = (x_new_head_snake, y_new_head_snake)
 
         self.positions.insert(0, new_head_snake)
-    
+
         self.last = self.positions.pop() if len(self.positions) > self.length\
             else self.last == 0
 
@@ -134,34 +133,33 @@ class Snake(GameObject):
         """Метод отрисовки змейки и затирание последнего сегмента"""
         for position_snake in self.positions[:-1]:
             self.draw_rect(position_snake, self.body_color)
-           
+
+        # Рисование головы
         self.draw_rect(self.positions[0], self.body_color)
-       
 
         # Затирание последнего сегмента
         if self.last:
-            last_rect = pg.Rect(self.last, (GRID_SIZE, GRID_SIZE))
-            pg.draw.rect(screen, BOARD_BACKGROUND_COLOR, last_rect)
+            self.draw_rect(
+                self.last, BOARD_BACKGROUND_COLOR, BOARD_BACKGROUND_COLOR
+            )
 
     def get_head_position(self):
         """Возвращение сегмента головы змейки"""
         return self.positions[0]
 
 
-
 def handle_keys(game_object):
     """Функция управления объектом класса яблоко или змейки"""
-
     for event in pg.event.get():
-        if event.type == pg.KEYDOWN:    
+        if event.type == pg.KEYDOWN:
             for element in DIR_KEY:
                 if event.key == element[0] \
-                    and game_object.direction != element[0]:
+                        and game_object.direction != element[0]:
                     game_object.next_direction = DIR_KEY.get(element, 0)
-           
                 if event.key == pg.K_e:
                     pg.quit()
-                    raise SystemExit 
+                    raise SystemExit
+
 
 def main():
     """Функция, где находится основной игровой цикл"""
@@ -186,6 +184,7 @@ def main():
         snake.move()
         snake.draw()
         apple.draw()
+
 
 if __name__ == '__main__':
     main()
