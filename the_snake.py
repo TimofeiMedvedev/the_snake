@@ -66,11 +66,11 @@ class GameObject:
         """создадим метод отрисовки для изменений в дочернем классе."""
         raise NotImplementedError('добавить этот метод в дочерние классы')
 
-    def draw_rect(self, position_draw, body_color, body_color2=BORDER_COLOR):
+    def draw_rect(self, position_draw, body_color):
         """А это общий модуль для отрисовки фигур в дочерних классах"""
         rect = pg.Rect(position_draw, (GRID_SIZE, GRID_SIZE))
         pg.draw.rect(screen, body_color, rect)
-        pg.draw.rect(screen, body_color2, rect, 1)
+        pg.draw.rect(screen, BORDER_COLOR, rect, 1)
 
 
 class Apple(GameObject):
@@ -139,9 +139,11 @@ class Snake(GameObject):
 
         # Затирание последнего сегмента
         if self.last:
-            self.draw_rect(
-                self.last, BOARD_BACKGROUND_COLOR, BOARD_BACKGROUND_COLOR
-            )
+            last_rect = pg.Rect(self.last, (GRID_SIZE, GRID_SIZE))
+            pg.draw.rect(screen, BOARD_BACKGROUND_COLOR, last_rect)
+    
+    def reset(self):
+        self.__init__()
 
     def get_head_position(self):
         """Возвращение сегмента головы змейки"""
@@ -154,7 +156,7 @@ def handle_keys(game_object):
         if event.type == pg.KEYDOWN:
             for element in DIR_KEY:
                 if event.key == element[0] \
-                        and game_object.direction != element[0]:
+                        and game_object.direction != element[1]:
                     game_object.next_direction = DIR_KEY.get(element, 0)
                 if event.key == pg.K_e:
                     pg.quit()
@@ -174,16 +176,16 @@ def main():
 
         handle_keys(snake)
         if snake.get_head_position() in snake.positions[2:]:
-            snake.__init__()
+            snake.reset()
             screen.fill(BOARD_BACKGROUND_COLOR)
         if snake.get_head_position() == apple.position:
             snake.length += 1
             position_list = snake.positions
             apple.randomize_position(position_list)
-        pg.display.update()
         snake.move()
         snake.draw()
         apple.draw()
+        pg.display.update()
 
 
 if __name__ == '__main__':
