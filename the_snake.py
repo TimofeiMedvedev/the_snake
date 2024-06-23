@@ -141,8 +141,9 @@ class Snake(GameObject):
         if self.last:
             last_rect = pg.Rect(self.last, (GRID_SIZE, GRID_SIZE))
             pg.draw.rect(screen, BOARD_BACKGROUND_COLOR, last_rect)
-    
+
     def reset(self):
+        """Делаем сброс настроек через _init_, чтобы не дублировать код"""
         self.__init__()
 
     def get_head_position(self):
