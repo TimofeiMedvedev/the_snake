@@ -117,8 +117,9 @@ class Snake(GameObject):
         new_head_snake = (x_new_head_snake, y_new_head_snake)
 
         self.positions.insert(0, new_head_snake)
-        if len(self.positions) > self.length:
-            self.last = self.positions.pop()
+    
+        self.last = self.positions.pop() if len(self.positions) > self.length\
+            else self.last == 0
 
     def draw(self):
         """Метод отрисовки змейки и затирание последнего сегмента"""
@@ -138,13 +139,13 @@ class Snake(GameObject):
         (x_0, y_0) = self.positions[0]
         return (x_0, y_0)
 
-    def reset(self):
-        """Метод сброса настроек змейки при столкновении"""
-        self.length = 1
-        self.positions = [((SCREEN_WIDTH // 2), (SCREEN_HEIGHT // 2))]
-        self.direction = randint(UP, DOWN, LEFT, RIGHT)
-        self.next_direction = None
-        self.last = None
+#    def reset(self):
+#        """Метод сброса настроек змейки при столкновении"""
+#        self.length = 1
+#        self.positions = [((SCREEN_WIDTH // 2), (SCREEN_HEIGHT // 2))]
+#        self.direction = randint(UP, DOWN, LEFT, RIGHT)
+#        self.next_direction = None
+#        self.last = None
 
 
 def handle_keys(game_object):
@@ -163,6 +164,7 @@ def handle_keys(game_object):
                 game_object.next_direction = LEFT
             elif event.key == pg.K_RIGHT and game_object.direction != LEFT:
                 game_object.next_direction = RIGHT
+           
 
 
 def main():
@@ -181,7 +183,8 @@ def main():
         snake.draw()
         apple.draw()
         if snake.get_head_position() in snake.positions[2:]:
-            snake.reset()
+            snake.__init__()
+            screen.fill(BOARD_BACKGROUND_COLOR)
         if snake.get_head_position() == apple.position:
             snake.length += 1
             position_list = snake.positions
