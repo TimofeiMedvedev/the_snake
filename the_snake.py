@@ -35,13 +35,6 @@ SNAKE_COLOR = (0, 255, 0)
 # Скорость движения змейки:
 SPEED = 10
 
-# Словарь с кнопками движений
-DIR_KEY = {
-    (pg.K_UP, DOWN): UP,
-    (pg.K_DOWN, UP): DOWN,
-    (pg.K_LEFT, RIGHT): LEFT,
-    (pg.K_RIGHT, LEFT): RIGHT}
-
 # Настройка игрового окна:
 screen = pg.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), 0, 32)
 
@@ -153,16 +146,21 @@ class Snake(GameObject):
 
 def handle_keys(game_object):
     """Функция управления объектом класса яблоко или змейки"""
+    dir_key = {
+        pg.K_UP: UP,
+        pg.K_DOWN: DOWN,
+        pg.K_LEFT: LEFT,
+        pg.K_RIGHT: RIGHT}
+    
     for event in pg.event.get():
         if event.type == pg.KEYDOWN:
-            for element in DIR_KEY:
-                if event.key == element[0] \
-                        and game_object.direction != element[1]:
-                    game_object.next_direction = DIR_KEY.get(element, 0)
-                if event.key == pg.K_e:
-                    pg.quit()
-                    raise SystemExit
-
+            if event.key == pg.K_e:
+                pg.quit()
+                raise SystemExit
+            dir = dir_key.get(event.key, game_object.direction)
+            if not (dir[0] + game_object.direction[0] == 0 and dir[1] + game_object.direction[1] == 0):
+                game_object.next_direction = dir
+               
 
 def main():
     """Функция, где находится основной игровой цикл"""
