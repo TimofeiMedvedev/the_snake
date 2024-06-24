@@ -48,11 +48,9 @@ clock = pg.time.Clock()
 class GameObject:
     """Создадим базовый класс c общими атрибутами."""
 
-    def __init__(self, body_color=None, next_direction=None
-                 ) -> None:
+    def __init__(self, body_color=None) -> None:
         self.position = ((SCREEN_WIDTH // 2), (SCREEN_HEIGHT // 2))
         self.body_color = body_color
-        self.next_direction = next_direction
 
     def draw(self):
         """создадим метод отрисовки для изменений в дочернем классе."""
@@ -81,11 +79,10 @@ class Apple(GameObject):
         )
 
         while self.position in position_list:
-            # self.randomize_position(position_list)
             self.position = (
                 randint(0, GRID_WIDTH - 1) * GRID_SIZE,
                 randint(0, GRID_HEIGHT - 1) * GRID_SIZE
-            )   
+            )
 
     def draw(self):
         """Метод рисования яблока."""
@@ -95,13 +92,14 @@ class Apple(GameObject):
 class Snake(GameObject):
     """Создадим класс объекта - Змейка."""
 
-    def __init__(self, body_color=None, next_direction=None) -> None:
-        super().__init__(body_color, next_direction)
+    def __init__(self, body_color=None) -> None:
+        super().__init__(body_color)
         self.length = 1
         self.positions = [self.position]
         self.direction = RIGHT
         self.body_color = SNAKE_GREEN
         self.last = 0
+        self.next_direction = None
 
     def update_direction(self, next_direction):
         """Метод изменения направления змейки после нажатия на кнопку."""
@@ -154,16 +152,18 @@ def handle_keys(game_object):
         pg.K_DOWN: DOWN,
         pg.K_LEFT: LEFT,
         pg.K_RIGHT: RIGHT}
-    
+
     for event in pg.event.get():
         if event.type == pg.KEYDOWN:
             if event.key == pg.K_e:
                 pg.quit()
                 raise SystemExit
             dir = dir_key.get(event.key, game_object.direction)
-            if not (dir[0] + game_object.direction[0] == 0 and dir[1] + game_object.direction[1] == 0):
+            if not (
+                    dir[0] + game_object.direction[0] == 0
+                    and dir[1] + game_object.direction[1] == 0):
                 game_object.next_direction = dir
-               
+
 
 def main():
     """Функция, где находится основной игровой цикл"""
