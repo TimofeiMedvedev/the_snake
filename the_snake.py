@@ -48,31 +48,30 @@ clock = pg.time.Clock()
 class GameObject:
     """Создадим базовый класс c общими атрибутами."""
 
-    def __init__(self, body_color=None, position_list=None, next_direction=None
+    def __init__(self, body_color=None, next_direction=None
                  ) -> None:
         self.position = ((SCREEN_WIDTH // 2), (SCREEN_HEIGHT // 2))
         self.body_color = body_color
-        self.position_list = position_list
         self.next_direction = next_direction
 
     def draw(self):
         """создадим метод отрисовки для изменений в дочернем классе."""
         raise NotImplementedError('добавить этот метод в дочерние классы')
 
-    def draw_rect(self, position_draw, body_color):
+    def draw_rect(self, position_draw):
         """А это общий модуль для отрисовки фигур в дочерних классах"""
         rect = pg.Rect(position_draw, (GRID_SIZE, GRID_SIZE))
-        pg.draw.rect(screen, body_color, rect)
+        pg.draw.rect(screen, self.body_color, rect)
         pg.draw.rect(screen, BORDER_COLOR, rect, 1)
 
 
 class Apple(GameObject):
     """Создадим класс объекта - Яблоко."""
 
-    def __init__(self) -> None:
-        super().__init__()
+    def __init__(self, body_color=None) -> None:
+        super().__init__(body_color)
         self.body_color = APPLE_COLOR
-        self.randomize_position(self.position_list)
+        self.randomize_position([])
 
     def randomize_position(self, position_list):
         """Метод определения случайных координат в яблоке."""
@@ -81,19 +80,23 @@ class Apple(GameObject):
             randint(0, GRID_HEIGHT - 1) * GRID_SIZE
         )
 
-        if position_list not in self.position:
-            self.position = self.position
+        while self.position in position_list:
+            # self.randomize_position(position_list)
+            self.position = (
+                randint(0, GRID_WIDTH - 1) * GRID_SIZE,
+                randint(0, GRID_HEIGHT - 1) * GRID_SIZE
+            )   
 
     def draw(self):
         """Метод рисования яблока."""
-        self.draw_rect(self.position, self.body_color)
+        self.draw_rect(self.position)
 
 
 class Snake(GameObject):
     """Создадим класс объекта - Змейка."""
 
-    def __init__(self) -> None:
-        super().__init__()
+    def __init__(self, body_color=None, next_direction=None) -> None:
+        super().__init__(body_color, next_direction)
         self.length = 1
         self.positions = [self.position]
         self.direction = RIGHT
@@ -125,10 +128,10 @@ class Snake(GameObject):
     def draw(self):
         """Метод отрисовки змейки и затирание последнего сегмента"""
         for position_snake in self.positions[:-1]:
-            self.draw_rect(position_snake, self.body_color)
+            self.draw_rect(position_snake)
 
         # Рисование головы
-        self.draw_rect(self.positions[0], self.body_color)
+        self.draw_rect(self.positions[0])
 
         # Затирание последнего сегмента
         if self.last:
