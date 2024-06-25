@@ -66,10 +66,10 @@ class GameObject:
 class Apple(GameObject):
     """Создадим класс объекта - Яблоко."""
 
-    def __init__(self, body_color=None) -> None:
+    def __init__(self, body_color=None, position_list=[]) -> None:
         super().__init__(body_color)
         self.body_color = APPLE_COLOR
-        self.randomize_position([])
+        self.randomize_position(position_list)
 
     def randomize_position(self, position_list):
         """Метод определения случайных координат в яблоке."""
@@ -163,17 +163,18 @@ def handle_keys(game_object):
             if event.key == pg.K_e:
                 pg.quit()
                 raise SystemExit
-            dir = dir_key.get((event.key, game_object.direction), game_object.direction)
+            dir = dir_key.get(
+                (event.key, game_object.direction), game_object.direction)
             game_object.next_direction = dir
-      
+
 
 def main():
     """Функция, где находится основной игровой цикл"""
     # Инициализация PyGame:
     pg.init()
     # Тут нужно создать экземпляры классов.
-    apple = Apple()
     snake = Snake()
+    apple = Apple(snake.positions)
 
     while True:
         clock.tick(SPEED)
@@ -184,8 +185,7 @@ def main():
             screen.fill(BOARD_BACKGROUND_COLOR)
         if snake.get_head_position() == apple.position:
             snake.length += 1
-            position_list = snake.positions
-            apple.randomize_position(position_list)
+            apple.randomize_position(snake.positions)
         snake.move()
         snake.draw()
         apple.draw()
