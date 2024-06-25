@@ -111,7 +111,7 @@ class Snake(GameObject):
         """Метод вычисления координат головы и тела змейки при
         движении, а также проверка на столкновение с телом змейки
         """
-        (x_head, y_head) = self.get_head_position()
+        x_head, y_head = self.get_head_position()
         x, y = self.direction
         self.update_direction(self.next_direction)
         x_new_head_snake = (x_head + x * GRID_SIZE) % SCREEN_WIDTH
@@ -129,7 +129,7 @@ class Snake(GameObject):
             self.draw_rect(position_snake)
 
         # Рисование головы
-        self.draw_rect(self.positions[0])
+        self.draw_rect(self.get_head_position())
 
         # Затирание последнего сегмента
         if self.last:
@@ -148,19 +148,24 @@ class Snake(GameObject):
 def handle_keys(game_object):
     """Функция управления объектом класса яблоко или змейки"""
     dir_key = {
-        (pg.K_UP, DOWN): UP,
-        (pg.K_DOWN, UP): DOWN,
-        (pg.K_LEFT, RIGHT): LEFT,
-        (pg.K_RIGHT, LEFT): RIGHT}
+        (pg.K_UP, LEFT): UP,
+        (pg.K_UP, RIGHT): UP,
+        (pg.K_DOWN, LEFT): DOWN,
+        (pg.K_DOWN, RIGHT): DOWN,
+        (pg.K_LEFT, UP): LEFT,
+        (pg.K_LEFT, DOWN): LEFT,
+        (pg.K_RIGHT, UP): RIGHT,
+        (pg.K_RIGHT, DOWN): RIGHT,
+    }
 
     for event in pg.event.get():
         if event.type == pg.KEYDOWN:
             if event.key == pg.K_e:
                 pg.quit()
                 raise SystemExit
-        dir_move = dir_key(event.key, game_object.direction)
-        if dir_move[0] != dir_move[1]:
-            game_object.next_direction = dir_move[1]
+            dir = dir_key.get((event.key, game_object.direction), game_object.direction)
+            game_object.next_direction = dir
+      
 
 def main():
     """Функция, где находится основной игровой цикл"""
