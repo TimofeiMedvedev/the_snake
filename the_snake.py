@@ -116,7 +116,7 @@ class Snake(GameObject):
         self.positions.insert(0, new_head_snake)
 
         self.last = self.positions.pop() if len(
-            self.positions) > self.length else self.last is None
+            self.positions) > self.length else None
 
     def draw(self):
         """Метод отрисовки змейки и затирание последнего сегмента"""
@@ -137,7 +137,7 @@ class Snake(GameObject):
         self.positions = [self.position]
         self.direction = RIGHT
         self.body_color = SNAKE_GREEN
-        self.last = 0
+        self.last = None
         self.next_direction = None
 
     def get_head_position(self):
