@@ -94,12 +94,7 @@ class Snake(GameObject):
 
     def __init__(self, body_color=None) -> None:
         super().__init__(body_color)
-        self.length = 1
-        self.positions = [self.position]
-        self.direction = RIGHT
-        self.body_color = SNAKE_GREEN
-        self.last = 0
-        self.next_direction = None
+        self.reset()
 
     def update_direction(self, next_direction):
         """Метод изменения направления змейки после нажатия на кнопку."""
@@ -120,8 +115,8 @@ class Snake(GameObject):
 
         self.positions.insert(0, new_head_snake)
 
-        self.last = self.positions.pop() if len(self.positions) > self.length\
-            else self.last == 0
+        self.last = self.positions.pop() if len(
+            self.positions) > self.length else self.last is None
 
     def draw(self):
         """Метод отрисовки змейки и затирание последнего сегмента"""
@@ -138,7 +133,12 @@ class Snake(GameObject):
 
     def reset(self):
         """Делаем сброс настроек через _init_, чтобы не дублировать код"""
-        self.__init__()
+        self.length = 1
+        self.positions = [self.position]
+        self.direction = RIGHT
+        self.body_color = SNAKE_GREEN
+        self.last = 0
+        self.next_direction = None
 
     def get_head_position(self):
         """Возвращение сегмента головы змейки"""
